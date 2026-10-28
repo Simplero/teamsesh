@@ -94,7 +94,9 @@ touch a Syncthing that the user already runs.
   relays, NAT traversal and auto-upgrade are off. Each peer's address is its Tailscale IP.
 - The Syncthing GUI and REST API bind to `127.0.0.1` only, on a separate port, with a random
   API key in TeamSesh's config (file mode 0600).
-- **One folder per owner**: `~/TeamSesh/team/<owner-id>/`. On the owner's machines it is
+- **One folder per owner device**: `~/TeamSesh/team/<folder-id>/`, where the folder ID is a
+  hash of login and Syncthing device ID. (Per device, not per person: two send-only copies
+  of one folder on two of your machines would ignore each other.) On the owner's machines it is
   send-only. On everyone else's machines it is receive-only. A local change on a receiving
   machine stays local, and Syncthing does not send it on. Receivers still pass the owner's
   original files to each other, so a teammate who comes online later can get a share from
@@ -107,9 +109,10 @@ touch a Syncthing that the user already runs.
 
 ### 4. Team membership
 
-- The team is an **explicit list** of Tailscale login names, kept in a small team file that
-  members sync like any share. `teamsesh team add alice@example.com` adds a person.
-  The person who runs `teamsesh team init` starts the list.
+- The team is an **explicit list** of Tailscale login names, kept by each person on their own
+  machine. `teamsesh team add alice@example.com` adds a person. Two people pair only when both
+  list each other. (Built 2026-10-28: simpler than a synced team file, and nobody can add
+  themselves to your team.) Your own other devices always count as team.
 - Pairing: TeamSesh only talks to peers whose Tailscale identity is on the list. It checks the
   identity with `tailscale whois` on the **actual connection address**, then links that
   identity to the peer's Syncthing device ID. Unknown identities, tagged devices, devices
@@ -154,7 +157,7 @@ Transcripts often hold tokens, API keys and pasted `.env` values.
 ```
 teamsesh up                         # start the sidecar and pair (also run by the service)
 teamsesh status                     # peers online, sync state, delivery state of my shares
-teamsesh team init | add | remove | ls
+teamsesh team [add | remove] <login>
 teamsesh ls [--team|--mine]         # local sessions, or sessions teammates shared
 teamsesh share [<id>|--last] [--team] [--public] [--redact|--force] [--yes] [--wait]
 teamsesh unshare <share-id>
@@ -252,3 +255,12 @@ Not taken, and why:
 ## Name
 
 TeamSesh, chosen 2026-10-28. Repo: `Simplero/teamsesh`.
+
+## Build log
+
+- 2026-10-28: milestone 2 built (`cmd/teamsesh`, `internal/*`). Tested end to end between
+  Calvin's Mac and sdev2: pairing, share with secret check and preview, delivery in about 6 s,
+  `--wait`, `ls --team`, Claude Code pickup as a new session (recalled the codeword),
+  handoff route, tamper repair (revert), unshare, and the Linux systemd service. Not yet
+  tested: the macOS launchd service, two different people (only Calvin's own devices so far),
+  Codex pickup through `teamsesh pick` (the strip and import were tested in the spike).
