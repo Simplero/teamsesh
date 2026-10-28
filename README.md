@@ -35,12 +35,21 @@ alice$     teamsesh pick k3x7q2mzpa
 
 Requires [Tailscale](https://tailscale.com/download), logged in.
 
-From source for now (one-line installers come next):
+macOS and Linux:
 
 ```
-go install github.com/Simplero/teamsesh/cmd/teamsesh@latest
-teamsesh service install          # runs in the background, starts at login (macOS, Linux)
+curl -fsSL https://raw.githubusercontent.com/Simplero/teamsesh/main/install.sh | sh
 ```
+
+Windows (PowerShell):
+
+```
+irm https://raw.githubusercontent.com/Simplero/teamsesh/main/install.ps1 | iex
+```
+
+The installer checks the download against the release checksums, puts `teamsesh` in
+`~/.local/bin` (Windows: `%LOCALAPPDATA%\TeamSesh\bin`), and starts it in the background at
+login. Run the same line again to update. With Go: `go install github.com/Simplero/teamsesh/cmd/teamsesh@latest`.
 
 ## Set up your team
 

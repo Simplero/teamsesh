@@ -31,6 +31,8 @@ func cmdService(args []string) error {
 		return launchd(exe, install)
 	case "linux":
 		return systemd(exe, install)
+	case "windows":
+		return scheduledTask(exe, install)
 	default:
 		return fmt.Errorf("the background service is not supported on %s yet; run \"teamsesh up\" in a terminal", runtime.GOOS)
 	}
@@ -117,6 +119,25 @@ WantedBy=default.target
 	fmt.Println("teamsesh now runs in the background (systemd user service).")
 	fmt.Println("To keep it running while you are logged out: sudo loginctl enable-linger $USER")
 	fmt.Println("Log: journalctl --user -u teamsesh")
+	return nil
+}
+
+// scheduledTask starts teamsesh at logon, hidden, through Windows Task Scheduler.
+func scheduledTask(exe string, install bool) error {
+	_ = exec.Command("schtasks", "/End", "/TN", "TeamSesh").Run()
+	_ = exec.Command("schtasks", "/Delete", "/TN", "TeamSesh", "/F").Run()
+	if !install {
+		fmt.Println("Stopped and removed the teamsesh task.")
+		return nil
+	}
+	action := fmt.Sprintf(`powershell.exe -NoProfile -WindowStyle Hidden -Command "& '%s' up"`, strings.ReplaceAll(exe, "'", "''"))
+	if out, err := exec.Command("schtasks", "/Create", "/TN", "TeamSesh", "/SC", "ONLOGON", "/RL", "LIMITED", "/TR", action, "/F").CombinedOutput(); err != nil {
+		return fmt.Errorf("schtasks /Create: %v: %s", err, out)
+	}
+	if out, err := exec.Command("schtasks", "/Run", "/TN", "TeamSesh").CombinedOutput(); err != nil {
+		return fmt.Errorf("schtasks /Run: %v: %s", err, out)
+	}
+	fmt.Println("teamsesh now runs in the background and starts when you log in (Task Scheduler: TeamSesh).")
 	return nil
 }
 

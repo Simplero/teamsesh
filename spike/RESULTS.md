@@ -45,7 +45,7 @@ Script: `codex_strip.py`.
 ## 3. Sidecar Syncthing: works next to Calvin's own
 
 - A second instance with its own home folder ran next to Calvin's normal Syncthing (`*:22000`,
-  `127.0.0.1:8384`). The sidecar bound to `100.118.101.92:22100` (Tailscale only) and
+  `127.0.0.1:8384`). The sidecar bound to `<tailscale-ip>:22100` (Tailscale only) and
   `127.0.0.1:28384` (API). No clash.
 - Discovery, relays, NAT and auto-upgrade off. Static peer address on the Tailscale IP.
   Tailnet policy allowed TCP 22100 between the two machines.
