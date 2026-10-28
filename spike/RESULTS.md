@@ -34,7 +34,11 @@ Script: `claude_strip.py`.
 UUID in `sessions/YYYY/MM/DD/rollout-<timestamp>-<id>.jsonl`. The raw rollout also leaks:
 developer messages (permissions, tools) and AGENTS.md text in the first user message.
 
-Still open: an older Codex reading a rollout written by a newer one.
+Follow-up the same day on sdev4 (Codex 0.116, logged in): the old Codex parsed the stripped
+rollout and got as far as calling the model, then the server refused the old client
+("requires a newer version of Codex"). So old Codex clients stop working anyway; TeamSesh can
+require a current Codex instead of supporting old rollout formats. sdev1 and sdev3 have no
+Codex; sdev2's Codex login is expired.
 
 Script: `codex_strip.py`.
 
