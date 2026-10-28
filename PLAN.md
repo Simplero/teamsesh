@@ -264,3 +264,6 @@ TeamSesh, chosen 2026-10-28. Repo: `Simplero/teamsesh`.
   handoff route, tamper repair (revert), unshare, and the Linux systemd service. Not yet
   tested: the macOS launchd service, two different people (only Calvin's own devices so far),
   Codex pickup through `teamsesh pick` (the strip and import were tested in the spike).
+- 2026-10-28: v0.1.0 released. Repo public. `install.sh` tested from the public URL on macOS
+  (arm64) and Linux (amd64). Installed as a launchd service on Calvin's MacBook Pro M5.
+  Windows: builds and `install.ps1` written, not yet run on a Windows machine.
